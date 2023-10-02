@@ -24,11 +24,7 @@ def add_vehicle(new_vehicle)
 end
 
 def remove_vehicle(reg_no)
- $vehicles.each { |vehicle|
-  if vehicle.get_reg_no == reg_no
-  $vehicles.delete(vehicle)
- end
- }
+  $vehicles.delete_if { |vehicle| vehicle.reg_no == reg_no }
 end
 
 van5 = Van.new("Suzuki","GF324","13",4,13,false)
@@ -38,24 +34,22 @@ remove_vehicle("13")
 def inventory
   $vehicles.each { |vehicle|
     if !vehicle.rented_out
-      puts "Registeration Number of Available Vehicle is " + vehicle.get_reg_no
+      puts "Registeration Number of Available #{vehicle.class.name} is #{vehicle.reg_no}"
     end
   }
 end
 
 def rent_out(type)
-  if type == 'car'
-    return 10000
-  elseif type == 'bike'
-    return 1000
-  elseif type == 'van'
-    return 20000
+  vehicle = $vehicles.find { |v| v.type == type && !v.rented_out }
+  if vehicle
+    vehicle.rented_out = true
+    vehicle.rent[type.to_sym]
   else
-    return "Invalid Type"
+    "No available #{type}s to rent."
   end
 end
 
-result = rent_out('car')
+result = rent_out('van')
 puts result
 inventory
 puts $vehicles.size
